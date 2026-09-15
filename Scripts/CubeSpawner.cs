@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -7,7 +6,7 @@ namespace FallingCubes
 {
     public class CubeSpawner : MonoBehaviour
     {
-        [SerializeField] private GameObject _prefab;
+        [SerializeField] private FallingCube _fallingCubePrefab;
         [SerializeField] private SpawnField _spawnField;
         [SerializeField] private float _spawnDelay = 1f;
         [SerializeField] private int _poolCapacity = 5;
@@ -15,15 +14,16 @@ namespace FallingCubes
         [SerializeField] private int _minCubeLifeTime = 2;
         [SerializeField] private int _maxCubeLifeTime = 5;
 
-        private ObjectPool<GameObject> _pool;
+        private ObjectPool<FallingCube> _pool;
+        private Coroutine _coroutine;
 
         private void Awake()
         {
-            _pool = new ObjectPool<GameObject>(
-                createFunc: () => Instantiate(_prefab),
-                actionOnGet: (obj) => ActionOnGet(obj),
-                actionOnRelease: (obj) => obj.SetActive(false),
-                actionOnDestroy: (obj) => Destroy(obj),
+            _pool = new ObjectPool<FallingCube>(
+                createFunc: () => CreateCube(),
+                actionOnGet: (cube) => ActionOnGet(cube),
+                actionOnRelease: (cube) => ActionOnRelease(cube),
+                actionOnDestroy: (cube) => ActionOnDestroy(cube),
                 collectionCheck: true,
                 defaultCapacity: _poolCapacity,
                 maxSize: _poolMaxSize);
@@ -31,22 +31,40 @@ namespace FallingCubes
 
         private void Start()
         {
-            StartCoroutine(nameof(Spawn));
+            _coroutine = StartCoroutine(Spawn());
         }
 
-        private void ActionOnGet(GameObject obj)
+        private FallingCube CreateCube()
         {
-            obj.transform.position = GetRandomPositionOnField(_spawnField);
+            var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var cube = obj.AddComponent<FallingCube>();
+            _fallingCubePrefab.CloneTo(cube);
+            return cube;
+        }
+
+        private void ActionOnGet(FallingCube cube)
+        {
+            var obj = cube.gameObject;
             obj.SetActive(true);
-            var cube = obj.GetComponent<FallingCube>();
-            cube.Init(Random.Range(_minCubeLifeTime, _maxCubeLifeTime + 1));
-            cube.OnLifeEnded += ReleaseCube;
+            obj.transform.position = _spawnField.GetRandomPosition();
+            cube.LifeTime = Random.Range(_minCubeLifeTime, _maxCubeLifeTime + 1);
+            cube.LifeEnded += ReleaseCube;
+        }
+
+        private void ActionOnRelease(FallingCube cube)
+        {
+            cube.gameObject.SetActive(false);
+        }
+
+        private void ActionOnDestroy(FallingCube cube)
+        {
+            Destroy(cube.gameObject);
         }
 
         private void ReleaseCube(FallingCube cube)
         {
-            cube.OnLifeEnded -= ReleaseCube;
-            _pool.Release(cube.gameObject);
+            cube.LifeEnded -= ReleaseCube;
+            _pool.Release(cube);
         }
 
         private IEnumerator Spawn()
@@ -58,30 +76,6 @@ namespace FallingCubes
                 _pool.Get();
                 yield return delay;
             }   
-        }
-
-        private Vector3 GetRandomPositionOnField(SpawnField field)
-        {
-            Vector3 spawnCenter = field.transform.position;
-            Vector3 spawnScale = field.Scale;
-
-            var spawnZoneX = GetRangeZone(spawnCenter.x, spawnScale.x);
-            var spawnZoneY = GetRangeZone(spawnCenter.y, spawnScale.y);
-            var spawnZoneZ = GetRangeZone(spawnCenter.z, spawnScale.z);
-
-            float randomX = Random.Range(spawnZoneX.Item1, spawnZoneX.Item2);
-            float randomY = Random.Range(spawnZoneY.Item1, spawnZoneY.Item2);
-            float randomZ = Random.Range(spawnZoneZ.Item1, spawnZoneZ.Item2);
-
-            return new Vector3(randomX, randomY, randomZ);
-        }
-
-        private (float,float) GetRangeZone(float center, float scale)
-        {
-            float start = center - (scale * 0.5f);
-            float end = center + (scale * 0.5f);
-
-            return (start, end);
         }
     }
 }

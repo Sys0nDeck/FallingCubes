@@ -8,48 +8,76 @@ namespace FallingCubes
     [RequireComponent(typeof(Rigidbody))]
     public class FallingCube : MonoBehaviour
     {
-        [SerializeField] private int _lifeTime;
         [SerializeField] private Color _defaultColor;
         [SerializeField] private Color _HittedColor;
 
         private Coroutine _coroutine;
+        private Renderer _renderer;
+        private Rigidbody _rigitbody;
+        private bool _hasHit;
 
-        public event Action<FallingCube> OnLifeEnded;
+        public event Action<FallingCube> LifeEnded;
 
-        public bool HasHit { get; private set; }
+        public int LifeTime { get; set; }
+
+        private void Awake()
+        {
+            _renderer = GetComponent<Renderer>();
+            _rigitbody = GetComponent<Rigidbody>();
+        }
+
+        private void Start()
+        {
+            _renderer.material.color = _defaultColor;
+        }
 
         private void OnEnable()
         {
-            HasHit = false;
-            gameObject.GetComponent<Renderer>().material.color = _defaultColor;
+            _hasHit = false;
+            ResetParameters();
+            _renderer.material.color = _defaultColor;
         }
 
         private void OnDisable()
         {
-            StopCoroutine(_coroutine);
+            if (_coroutine != null)
+                StopCoroutine(_coroutine);            
         }
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (HasHit == true)
+            if (_hasHit == true)
                 return;
 
-            HasHit = true;
-            gameObject.GetComponent<Renderer>().material.color = _HittedColor;
-            _coroutine = StartCoroutine(nameof(CountingDownLifeTime));
+            _hasHit = true;
+            _renderer.material.color = _HittedColor;
+            _coroutine = StartCoroutine(CountDownLifeTime());
         }
 
-        public void Init(int lifeTime)
+        public void Init(Color defaultColor, Color HittedColor)
         {
-            _lifeTime = lifeTime;
+            _defaultColor = defaultColor;
+            _HittedColor = HittedColor;
         }
 
-        private IEnumerator CountingDownLifeTime()
+        private void ResetParameters()
         {
-            var time = new WaitForSecondsRealtime(_lifeTime);
+            transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
+            _rigitbody.velocity = Vector3.zero;
+            _rigitbody.angularVelocity = Vector3.zero;
+        }
+
+        public void CloneTo(FallingCube clone)
+        {
+            clone.Init(_defaultColor, _HittedColor);
+        }
+
+        private IEnumerator CountDownLifeTime()
+        {
+            var time = new WaitForSecondsRealtime(LifeTime);
             yield return time;
 
-            OnLifeEnded?.Invoke(this);
+            LifeEnded?.Invoke(this);
         }
     }
 }
