@@ -9,16 +9,15 @@ namespace FallingCubes
     public class FallingCube : MonoBehaviour
     {
         [SerializeField] private Color _defaultColor;
-        [SerializeField] private Color _HittedColor;
+        [SerializeField] private Color _hittedColor;
 
         private Coroutine _coroutine;
         private Renderer _renderer;
         private Rigidbody _rigitbody;
         private bool _hasHit;
+        private int _lifeTime;
 
         public event Action<FallingCube> LifeEnded;
-
-        public int LifeTime { get; set; }
 
         private void Awake()
         {
@@ -28,14 +27,12 @@ namespace FallingCubes
 
         private void Start()
         {
-            _renderer.material.color = _defaultColor;
+            ResetParameters();
         }
 
         private void OnEnable()
         {
-            _hasHit = false;
             ResetParameters();
-            _renderer.material.color = _defaultColor;
         }
 
         private void OnDisable()
@@ -49,32 +46,31 @@ namespace FallingCubes
             if (_hasHit == true)
                 return;
 
+            if (collision.gameObject.TryGetComponent<FallingCube>(out var component))
+                return;
+
             _hasHit = true;
-            _renderer.material.color = _HittedColor;
+            _renderer.material.color = _hittedColor;
             _coroutine = StartCoroutine(CountDownLifeTime());
         }
 
-        public void Init(Color defaultColor, Color HittedColor)
+        public void Init(int lifeTime)
         {
-            _defaultColor = defaultColor;
-            _HittedColor = HittedColor;
+            _lifeTime = lifeTime;
         }
 
         private void ResetParameters()
         {
+            _hasHit = false;
+            _renderer.material.color = _defaultColor;
             transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
             _rigitbody.velocity = Vector3.zero;
             _rigitbody.angularVelocity = Vector3.zero;
         }
 
-        public void CloneTo(FallingCube clone)
-        {
-            clone.Init(_defaultColor, _HittedColor);
-        }
-
         private IEnumerator CountDownLifeTime()
         {
-            var time = new WaitForSecondsRealtime(LifeTime);
+            var time = new WaitForSecondsRealtime(_lifeTime);
             yield return time;
 
             LifeEnded?.Invoke(this);

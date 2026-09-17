@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4292823468435049656}
   - component: {fileID: 9099298634562915829}
   - component: {fileID: 4612133761244708428}
-  - component: {fileID: 8686452199084932801}
+  - component: {fileID: -8578515969386663987}
   m_Layer: 0
   m_Name: FallingCube
   m_TagString: Untagged
@@ -134,7 +134,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8686452199084932801
+--- !u!114 &-8578515969386663987
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,6 +146,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a3d76520d150143bf5fb80e0c5ec8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lifeTime: 0
-  _defaultColor: {r: 0.36352444, g: 0.8018868, b: 0.3063813, a: 0}
-  _HittedColor: {r: 0.745283, g: 0.28475437, b: 0.28475437, a: 0}
+  _defaultColor: {r: 0.26539695, g: 0.7924528, b: 0.27252325, a: 0}
+  _hittedColor: {r: 0.8490566, g: 0.28435388, b: 0.28435388, a: 0}

@@ -6,7 +6,7 @@ namespace FallingCubes
 {
     public class CubeSpawner : MonoBehaviour
     {
-        [SerializeField] private FallingCube _fallingCubePrefab;
+        [SerializeField] private FallingCube _prefab;
         [SerializeField] private SpawnField _spawnField;
         [SerializeField] private float _spawnDelay = 1f;
         [SerializeField] private int _poolCapacity = 5;
@@ -20,7 +20,7 @@ namespace FallingCubes
         private void Awake()
         {
             _pool = new ObjectPool<FallingCube>(
-                createFunc: () => CreateCube(),
+                createFunc: () => Instantiate(_prefab),
                 actionOnGet: (cube) => ActionOnGet(cube),
                 actionOnRelease: (cube) => ActionOnRelease(cube),
                 actionOnDestroy: (cube) => ActionOnDestroy(cube),
@@ -34,20 +34,12 @@ namespace FallingCubes
             _coroutine = StartCoroutine(Spawn());
         }
 
-        private FallingCube CreateCube()
-        {
-            var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            var cube = obj.AddComponent<FallingCube>();
-            _fallingCubePrefab.CloneTo(cube);
-            return cube;
-        }
-
         private void ActionOnGet(FallingCube cube)
         {
             var obj = cube.gameObject;
             obj.SetActive(true);
             obj.transform.position = _spawnField.GetRandomPosition();
-            cube.LifeTime = Random.Range(_minCubeLifeTime, _maxCubeLifeTime + 1);
+            cube.Init(Random.Range(_minCubeLifeTime, _maxCubeLifeTime + 1));
             cube.LifeEnded += ReleaseCube;
         }
 
