@@ -46,12 +46,12 @@ namespace FallingCubes
             if (_hasHit == true)
                 return;
 
-            if (collision.gameObject.TryGetComponent<FallingCube>(out var component))
-                return;
-
-            _hasHit = true;
-            _renderer.material.color = _hittedColor;
-            _coroutine = StartCoroutine(CountDownLifeTime());
+            if (collision.gameObject.TryGetComponent<Platform>(out var component))
+            {
+                _hasHit = true;
+                _renderer.material.color = _hittedColor;
+                _coroutine = StartCoroutine(CountDownLifeTime());
+            }  
         }
 
         public void Init(int lifeTime)
