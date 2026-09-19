@@ -1,6 +1,10 @@
 using UnityEngine;
 
-public class Platform : MonoBehaviour
+namespace FallingCubes
 {
+    public class Platform : MonoBehaviour
+    {
 
+    }
 }
+

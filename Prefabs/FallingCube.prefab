@@ -14,6 +14,10 @@ GameObject:
   - component: {fileID: 9099298634562915829}
   - component: {fileID: 4612133761244708428}
   - component: {fileID: -8578515969386663987}
+  - component: {fileID: 2395697584420218560}
+  - component: {fileID: 4773441845495725825}
+  - component: {fileID: 22915403347279012}
+  - component: {fileID: 651734729001610549}
   m_Layer: 0
   m_Name: FallingCube
   m_TagString: Untagged
@@ -146,5 +150,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a3d76520d150143bf5fb80e0c5ec8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultColor: {r: 0.26539695, g: 0.7924528, b: 0.27252325, a: 0}
-  _hittedColor: {r: 0.8490566, g: 0.28435388, b: 0.28435388, a: 0}
+  _detector: {fileID: 2395697584420218560}
+  _timer: {fileID: 4773441845495725825}
+--- !u!114 &2395697584420218560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5260854586914547649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab163ac856d52a247bd1e9870e792155, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4773441845495725825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5260854586914547649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3202a1f240f26540a8547ef98191ee7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &22915403347279012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5260854586914547649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff4ffd4c2ba05d40a28bcbeeecbef8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _detector: {fileID: 2395697584420218560}
+  _defaultColor: {r: 0.19824673, g: 0.764151, b: 0.2929376, a: 0}
+  _hittedColor: {r: 0.8207547, g: 0.22841759, b: 0.22841759, a: 0}
+--- !u!114 &651734729001610549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5260854586914547649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cacdb9141224989418de26d4f13c8937, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

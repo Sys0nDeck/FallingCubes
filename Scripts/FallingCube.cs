@@ -1,78 +1,49 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 namespace FallingCubes
 {
-    [RequireComponent(typeof(Collider))]
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(PlatformDetector))]
+    [RequireComponent(typeof(Timer))]
     public class FallingCube : MonoBehaviour
     {
-        [SerializeField] private Color _defaultColor;
-        [SerializeField] private Color _hittedColor;
+        [SerializeField] private PlatformDetector _detector;
+        [SerializeField] private Timer _timer;
 
-        private Coroutine _coroutine;
-        private Renderer _renderer;
-        private Rigidbody _rigitbody;
-        private bool _hasHit;
-        private int _lifeTime;
+        private float _lifeTime;
 
         public event Action<FallingCube> LifeEnded;
 
         private void Awake()
         {
-            _renderer = GetComponent<Renderer>();
-            _rigitbody = GetComponent<Rigidbody>();
-        }
-
-        private void Start()
-        {
-            ResetParameters();
+            _detector = GetComponent<PlatformDetector>();
+            _timer = GetComponent<Timer>();
         }
 
         private void OnEnable()
         {
-            ResetParameters();
+            _detector.Hitted += CubeHitted;
+            _timer.Ended += EndLife;
         }
 
         private void OnDisable()
         {
-            if (_coroutine != null)
-                StopCoroutine(_coroutine);            
+            _detector.Hitted -= CubeHitted;
+            _timer.Ended -= EndLife;
         }
 
-        private void OnCollisionEnter(Collision collision)
+        public void Init(float second)
         {
-            if (_hasHit == true)
-                return;
-
-            if (collision.gameObject.TryGetComponent<Platform>(out var component))
-            {
-                _hasHit = true;
-                _renderer.material.color = _hittedColor;
-                _coroutine = StartCoroutine(CountDownLifeTime());
-            }  
+            _lifeTime = second;
         }
 
-        public void Init(int lifeTime)
+        private void CubeHitted()
         {
-            _lifeTime = lifeTime;
+            _timer.StartTime(_lifeTime);
         }
 
-        private void ResetParameters()
+        private void EndLife()
         {
-            _hasHit = false;
-            _renderer.material.color = _defaultColor;
-            transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
-            _rigitbody.velocity = Vector3.zero;
-            _rigitbody.angularVelocity = Vector3.zero;
-        }
-
-        private IEnumerator CountDownLifeTime()
-        {
-            var time = new WaitForSecondsRealtime(_lifeTime);
-            yield return time;
-
             LifeEnded?.Invoke(this);
         }
     }
